@@ -40,6 +40,11 @@ private:
     double amplitude; 
     double currentSampleRate; 
     
+    juce::Array<float> wavetable2;
+    double phase2;
+    double increment2;
+    double frequency2;
+
     //wavetable synth GUI
     juce::Slider freqSlider, ampSlider; 
     juce::Label freqLabel, ampLabel; 

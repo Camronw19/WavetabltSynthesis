@@ -12,7 +12,7 @@ MainComponent::MainComponent()
     freqSlider.addListener(this); 
     addAndMakeVisible(freqSlider); 
     freqSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal); 
-    freqSlider.setRange(50, 500, 1); 
+    freqSlider.setRange(1, 500, 1); 
     freqSlider.setValue(200); 
     freqSlider.setTextValueSuffix("Hz"); 
    
@@ -66,10 +66,16 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
     wtSize = 1024;  
     currentSampleRate = sampleRate; 
 
+    phase2 = 0; 
+    frequency2 = 400; 
+    increment2 = frequency2 * wtSize / currentSampleRate;
+    
+
     //one sin wave cycle 
     for (int i = 0; i < wtSize; i++)
     {
         wavetable.insert(i, sin(2.0 * juce::double_Pi * i / wtSize));
+        wavetable2.insert(i, sin(2.0 * juce::double_Pi * i / wtSize)); 
     }
 }
 
@@ -82,9 +88,10 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
 
     for (int sample = 0; sample < bufferToFill.numSamples; ++sample)
     {
-        leftSpeaker[sample] = wavetable[(int)phase] * amplitude; 
-        rightSpeaker[sample] = wavetable[(int)phase] * amplitude; 
+        leftSpeaker[sample] = (wavetable[(int)phase] * wavetable2[(int)phase2]) * amplitude;
+        rightSpeaker[sample] = (wavetable[(int)phase] * wavetable2[(int)phase2]) * amplitude;
         updateFrequency(); 
+        phase2 = fmod((phase2 + increment2), wtSize);
     }
      
 }
